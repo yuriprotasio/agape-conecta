@@ -1,0 +1,12 @@
+[run]
+source = contas, gestao, config
+omit =
+    */migrations/*
+    config/asgi.py
+    config/wsgi.py
+    config/settings_teste.py
+    manage.py
+
+[report]
+show_missing = True
+skip_covered = False

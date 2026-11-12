@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  testes:
+    name: Build e testes (Python 3.12 + PostgreSQL 16)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: agape
+          POSTGRES_PASSWORD: agape-ci
+          POSTGRES_DB: agape
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U agape"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgres://agape:agape-ci@localhost:5432/agape
+      SECRET_KEY: chave-somente-para-ci
+
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Instalar dependências
+        run: pip install -r requirements-dev.txt
+
+      - name: Verificar configuração e migrações
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+
+      - name: Verificar configuração de produção
+        run: |
+          export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(50))')"
+          python manage.py check --deploy --fail-level WARNING
+
+      - name: Executar testes com cobertura mínima de 90%
+        run: pytest --cov-fail-under=90
