@@ -1,9 +1,16 @@
+import unicodedata
 from datetime import datetime
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+
+
+def normalizar(texto):
+    """Minúsculas e sem acentos, para busca que ignora maiúsculas e acentuação."""
+    sem_acento = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode()
+    return " ".join(sem_acento.lower().split())
 
 
 def validar_data_nao_futura(valor):
@@ -63,6 +70,7 @@ class Beneficiario(models.Model):
     situacao = models.CharField("situação", max_length=10, choices=Situacao.choices, default=Situacao.ATIVO)
     atividades = models.ManyToManyField(Atividade, related_name="beneficiarios", blank=True)
     data_cadastro = models.DateField("data de cadastro", auto_now_add=True)
+    nome_busca = models.CharField(max_length=150, editable=False, db_index=True, default="")
 
     class Meta:
         ordering = ["nome_completo"]
@@ -70,6 +78,10 @@ class Beneficiario(models.Model):
 
     def __str__(self):
         return self.nome_completo
+
+    def save(self, *args, **kwargs):
+        self.nome_busca = normalizar(self.nome_completo)
+        super().save(*args, **kwargs)
 
     @property
     def idade(self):

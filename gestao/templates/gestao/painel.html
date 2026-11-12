@@ -5,7 +5,7 @@
 <p class="sub">{{ user.get_perfil_display }}</p>
 <nav class="acoes" aria-label="Ações principais">
   <a class="btn btn-grande" href="#"><span aria-hidden="true">✓</span> Fazer chamada</a>
-  <a class="btn btn-grande btn-sec" href="#"><span aria-hidden="true">👤</span> Beneficiários</a>
+  <a class="btn btn-grande btn-sec" href="{% url 'gestao:beneficiarios' %}"><span aria-hidden="true">👤</span> Beneficiários</a>
   <a class="btn btn-grande btn-sec" href="#"><span aria-hidden="true">📝</span> Registrar atendimento</a>
   {% if user.eh_administrador %}<a class="btn btn-grande btn-sec" href="#"><span aria-hidden="true">📊</span> Relatórios</a>{% endif %}
 </nav>

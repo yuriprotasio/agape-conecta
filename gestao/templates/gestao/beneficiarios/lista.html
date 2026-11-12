@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titulo %}Beneficiários{% endblock %}
+{% block conteudo %}
+<h1>Beneficiários</h1>
+<form method="get" role="search" class="campo">
+  <label for="q">Buscar por nome</label>
+  <input type="search" id="q" name="q" value="{{ termo }}" maxlength="100" placeholder="Ex.: Ana">
+  <div class="linha-acoes"><button class="btn" type="submit">Buscar</button>
+  {% if user.eh_administrador %}<a class="btn btn-sec" href="{% url 'gestao:beneficiario_novo' %}">+ Novo beneficiário</a>{% endif %}</div>
+</form>
+{% if termo %}<p class="sub">{{ beneficiarios|length }} resultado(s) para “{{ termo }}”.</p>{% endif %}
+<ul class="lista">
+  {% for b in beneficiarios %}
+  <li><a href="{% url 'gestao:beneficiario_ficha' b.pk %}">{{ b.nome_completo }}</a>
+    <span class="sub">· {{ b.idade }} anos · {{ b.get_situacao_display }}</span></li>
+  {% empty %}
+  <li>Nenhum beneficiário encontrado.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
