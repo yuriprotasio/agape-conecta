@@ -78,6 +78,8 @@ DATABASES = {
         conn_health_checks=True,
     )
 }
+# Compatível com o pooler de conexões do Neon (PgBouncer em modo transação).
+DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
 
 AUTH_USER_MODEL = "contas.Usuario"
 
