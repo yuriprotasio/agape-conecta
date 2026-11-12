@@ -77,13 +77,9 @@ A Vercel reconhece o projeto Django pelo `manage.py` e pelo `WSGI_APPLICATION`, 
 1. Importe o repositório em vercel.com (Add New → Project).
 2. Em Storage, crie um banco PostgreSQL (Neon) e conecte ao projeto. A integração cria a variável `DATABASE_URL`.
 3. Em Settings → Environment Variables, defina `SECRET_KEY`, `ALLOWED_HOSTS=.vercel.app` e `CSRF_TRUSTED_ORIGINS=https://<seu-projeto>.vercel.app`, e faça um novo deploy.
-4. Na sua máquina, com `DATABASE_URL` e `SECRET_KEY` de produção no terminal, prepare o banco uma vez:
+4. Prepare o banco uma vez pelo GitHub Actions, sem precisar de Python na sua máquina. Em Settings → Secrets and variables → Actions do repositório, crie os segredos `DATABASE_URL` (o mesmo da Vercel), `SECRET_KEY` (a mesma da Vercel) e `DEMO_SENHA` (senha das contas de demonstração). Depois, em Actions → "Preparar banco de produção", clique em Run workflow. O workflow aplica as migrações, cria a tabela de cache e carrega os dados fictícios.
 
-```bash
-python manage.py migrate
-python manage.py createcachetable
-python manage.py carregar_demo --senha "escolha-uma-senha-forte"   # dados fictícios para avaliação
-```
+Se preferir fazer pela sua máquina, com as mesmas variáveis no terminal: `python manage.py migrate`, `python manage.py createcachetable` e `python manage.py carregar_demo --senha "..."`.
 
 ## Monitoramento
 
