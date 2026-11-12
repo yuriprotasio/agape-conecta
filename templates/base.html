@@ -1,0 +1,32 @@
+{% load static %}<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Ágape Conecta{% endblock %} · Ágape Conecta</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  {% if user.is_authenticated %}
+  <header class="topo">
+    <a class="marca" href="{% url 'gestao:painel' %}">Ágape Conecta</a>
+    <nav aria-label="Menu principal">
+      <a href="{% url 'gestao:painel' %}">Início</a>
+      <form method="post" action="{% url 'contas:logout' %}">{% csrf_token %}<button type="submit" class="btn-topo">Sair</button></form>
+    </nav>
+  </header>
+  {% endif %}
+  <main id="conteudo" class="conteudo">
+    {% if messages %}
+      {% for m in messages %}
+        <div class="aviso aviso-{{ m.tags }}" role="status">
+          <span aria-hidden="true">{% if m.tags == 'success' %}✓{% else %}⚠{% endif %}</span>
+          <span>{{ m }}</span>
+        </div>
+      {% endfor %}
+    {% endif %}
+    {% block conteudo %}{% endblock %}
+  </main>
+</body>
+</html>
