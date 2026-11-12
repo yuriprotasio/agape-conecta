@@ -1,0 +1,46 @@
+# Prepara o banco de produção (Neon) sem precisar de Python na máquina local.
+# Execute manualmente em Actions → "Preparar banco de produção" → Run workflow.
+# Usa os segredos do repositório: DATABASE_URL, SECRET_KEY e DEMO_SENHA.
+name: Preparar banco de produção
+
+on:
+  workflow_dispatch:
+    inputs:
+      carregar_demo:
+        description: "Carregar os dados fictícios de demonstração"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  preparar:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DEMO_SENHA: ${{ secrets.DEMO_SENHA }}
+      DEBUG: "False"
+      ALLOWED_HOSTS: ".vercel.app"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+      - name: Conferir segredos
+        run: |
+          test -n "$DATABASE_URL" || { echo "Falta o segredo DATABASE_URL"; exit 1; }
+          test -n "$SECRET_KEY" || { echo "Falta o segredo SECRET_KEY"; exit 1; }
+      - name: Aplicar migrações
+        run: python manage.py migrate --noinput
+      - name: Criar tabela de cache
+        run: python manage.py createcachetable
+      - name: Carregar dados fictícios
+        if: ${{ inputs.carregar_demo }}
+        run: |
+          test -n "$DEMO_SENHA" || { echo "Falta o segredo DEMO_SENHA"; exit 1; }
+          python manage.py carregar_demo --senha "$DEMO_SENHA"
