@@ -22,6 +22,7 @@
   <input type="hidden" name="atividade" value="{{ atividade.pk }}">
   <input type="hidden" name="data" value="{{ data|date:'Y-m-d' }}">
   {% if erro %}<div class="aviso aviso-error" role="alert"><span aria-hidden="true">⚠</span><span>{{ erro }} Os dados marcados foram mantidos.</span></div>{% endif %}
+  <button type="button" class="btn btn-sec btn-largo" id="marcar-todos" hidden>Marcar todos como presentes</button>
   <p class="contador" id="contador-chamada" aria-live="polite">{{ contagem.total }} inscritos · {{ contagem.presentes }} presentes · {{ contagem.ausentes }} ausentes</p>
   {% for l in linhas %}
   <fieldset class="chamada-linha">
@@ -30,7 +31,7 @@
       <label><input type="radio" name="estado_{{ l.b.pk }}" value="presente"{% if l.estado == "presente" %} checked{% endif %}><span><span aria-hidden="true">✓</span> Presente</span></label>
       <label><input type="radio" name="estado_{{ l.b.pk }}" value="ausente"{% if l.estado == "ausente" %} checked{% endif %}><span><span aria-hidden="true">✗</span> Ausente</span></label>
     </div>
-    <div class="campo" style="margin:10px 0 0"><label for="just_{{ l.b.pk }}">Justificativa da ausência <span class="opcional">(opcional)</span></label>
+    <div class="campo justificativa" style="margin:10px 0 0"><label for="just_{{ l.b.pk }}">Motivo da falta <span class="opcional">(opcional, só para ausentes)</span></label>
       <input id="just_{{ l.b.pk }}" name="justificativa_{{ l.b.pk }}" maxlength="200" value="{{ l.justificativa }}" placeholder="Ex.: consulta médica"></div>
   </fieldset>
   {% empty %}

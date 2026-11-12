@@ -6,7 +6,7 @@
 <h2>Precisa de atenção</h2>
 {% for b, total in alertas %}
 <div class="alerta"><strong><span aria-hidden="true">⚠</span> Faltas consecutivas: {{ total }}</strong><br>{{ b.nome_completo }} · {{ atividade.nome }}{% if b.nome_responsavel %}<br>Responsável: {{ b.nome_responsavel }}{% endif %}
-  <div class="linha-acoes"><a class="btn" href="{% url 'gestao:beneficiario_ficha' b.pk %}">Ver ficha de {{ b.nome_completo }}</a></div></div>
+  <div class="linha-acoes"><a class="btn btn-sec" href="tel:{{ b.telefone_link }}" aria-label="Ligar para o responsável por {{ b.nome_completo }}: {{ b.telefone_responsavel }}"><span aria-hidden="true">☎</span> Ligar: {{ b.telefone_responsavel }}</a><a class="btn" href="{% url 'gestao:beneficiario_ficha' b.pk %}">Ver ficha de {{ b.nome_completo }}</a></div></div>
 {% empty %}
 <p>Nenhum beneficiário com 3 ou mais faltas seguidas sem justificativa.</p>
 {% endfor %}

@@ -141,6 +141,7 @@ def test_resultado_mostra_alerta_de_faltas(cliente_colaborador, atividade, turma
     url = reverse("gestao:chamada_resultado", args=[atividade.pk]) + "?data=2026-11-10"
     conteudo = cliente_colaborador.get(url).content.decode()
     assert "Faltas consecutivas: 3" in conteudo and "Bruno Lima" in conteudo
+    assert 'href="tel:+55' in conteudo  # telefone do responsável direto no alerta
 
 
 # --- Atendimentos (RF05) e relatório (RF06) ---
