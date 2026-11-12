@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}Resultado da chamada{% endblock %}
+{% block conteudo %}
+<h1>Resultado</h1>
+<p class="sub">{{ atividade.nome }} · {{ data|date:"d/m/Y" }}</p>
+<h2>Precisa de atenção</h2>
+{% for b, total in alertas %}
+<div class="alerta"><strong><span aria-hidden="true">⚠</span> Faltas consecutivas: {{ total }}</strong><br>{{ b.nome_completo }} · {{ atividade.nome }}{% if b.nome_responsavel %}<br>Responsável: {{ b.nome_responsavel }}{% endif %}
+  <div class="linha-acoes"><a class="btn" href="{% url 'gestao:beneficiario_ficha' b.pk %}">Ver ficha de {{ b.nome_completo }}</a></div></div>
+{% empty %}
+<p>Nenhum beneficiário com 3 ou mais faltas seguidas sem justificativa.</p>
+{% endfor %}
+<div class="linha-acoes">
+  <a class="btn btn-sec" href="{% url 'gestao:chamada' %}">Nova chamada</a>
+  <a class="btn btn-sec" href="{% url 'gestao:painel' %}">Voltar ao início</a>
+</div>
+{% endblock %}

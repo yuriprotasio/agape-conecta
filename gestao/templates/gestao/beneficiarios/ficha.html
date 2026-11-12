@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %}{{ b.nome_completo }}{% endblock %}
+{% block conteudo %}
+<h1>{{ b.nome_completo }}</h1>
+<p class="sub">{{ b.idade }} anos · Situação: {{ b.get_situacao_display }}{% if b.nome_responsavel %} · Responsável: {{ b.nome_responsavel }}{% endif %} · Telefone: {{ b.telefone_responsavel }}</p>
+{% for atividade, total in alertas %}
+<div class="alerta" role="status"><strong><span aria-hidden="true">⚠</span> Faltas consecutivas: {{ total }}</strong> na atividade {{ atividade.nome }}</div>
+{% endfor %}
+{% if b.necessidades_apoio %}<h2>Necessidades de apoio</h2><p>{{ b.necessidades_apoio|linebreaksbr }}</p>{% endif %}
+<p class="sub">Atividades: {% for a in b.atividades.all %}{{ a.nome }}{% if not forloop.last %}, {% endif %}{% empty %}nenhuma{% endfor %}</p>
+<div class="linha-acoes">
+  <a class="btn" href="{% url 'gestao:atendimento_novo' %}?beneficiario={{ b.pk }}">Registrar atendimento</a>
+  {% if user.eh_administrador %}<a class="btn btn-sec" href="{% url 'gestao:beneficiario_editar' b.pk %}">Editar cadastro</a>{% endif %}
+</div>
+<h2>Histórico</h2>
+<ul class="historico">
+  {% for h in historico %}
+  <li><strong>{{ h.quando|date:"d/m/Y" }}</strong> ·
+    {% if h.tipo == "frequencia" %}{{ h.item.atividade.nome }} ·
+      {% if h.item.presente %}<span aria-hidden="true">✓</span> Presente{% else %}<span aria-hidden="true">✗</span> Ausente{% if h.item.justificativa %} ({{ h.item.justificativa }}){% endif %}{% endif %}
+    {% else %}Atendimento {{ h.item.get_tipo_display|lower }} · {{ h.item.profissional.nome }}: {{ h.item.descricao|truncatechars:120 }}{% if h.item.profissional_id == user.pk or user.eh_administrador %} · <a href="{% url 'gestao:atendimento_editar' h.item.pk %}">Editar</a>{% endif %}
+    {% endif %}
+  </li>
+  {% empty %}<li>Nenhum registro ainda.</li>{% endfor %}
+</ul>
+{% endblock %}

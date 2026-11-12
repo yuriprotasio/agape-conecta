@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titulo %}Relatório de frequência{% endblock %}
+{% block conteudo %}
+<h1>Relatório mensal de frequência</h1>
+<form method="get" class="filtros">
+  <div class="campo"><label for="atividade">Atividade</label>
+    <select id="atividade" name="atividade"><option value="">Selecione…</option>
+      {% for a in atividades %}<option value="{{ a.pk }}"{% if atividade and a.pk == atividade.pk %} selected{% endif %}>{{ a.nome }}</option>{% endfor %}
+    </select></div>
+  <div class="campo"><label for="mes">Mês</label><input type="month" id="mes" name="mes" value="{{ inicio|date:'Y-m' }}"></div>
+  <div class="campo"><button class="btn" type="submit">Gerar relatório</button></div>
+</form>
+{% if atividade %}
+<h2>{{ atividade.nome }} · {{ inicio|date:"m/Y" }}</h2>
+{% if linhas %}
+<div class="tabela-rolagem"><table>
+  <caption class="sub">Somente nome e indicadores de frequência; dados de contato não são exibidos.</caption>
+  <thead><tr><th scope="col">Beneficiário</th><th scope="col">Presenças</th><th scope="col">Faltas</th><th scope="col">% de presença</th></tr></thead>
+  <tbody>{% for l in linhas %}<tr><td>{{ l.nome }}</td><td>{{ l.presencas }}</td><td>{{ l.faltas }}</td><td>{{ l.percentual }}%</td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<p>Não há chamadas registradas para esta atividade no mês escolhido.</p>{% endif %}
+{% endif %}
+{% endblock %}

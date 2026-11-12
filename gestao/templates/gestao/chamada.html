@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}Chamada de frequência{% endblock %}
+{% block conteudo %}
+<h1>Chamada de frequência</h1>
+<form method="get" class="filtros" aria-label="Escolher atividade e data">
+  <div class="campo"><label for="atividade">Atividade</label>
+    <select id="atividade" name="atividade" required>
+      <option value="">Selecione…</option>
+      {% for a in atividades %}<option value="{{ a.pk }}"{% if atividade and a.pk == atividade.pk %} selected{% endif %}>{{ a.nome }} – {{ a.dias_semana }} {{ a.horario|time:"H\hi" }}</option>{% endfor %}
+    </select></div>
+  <div class="campo"><label for="data">Data</label>
+    <input type="date" id="data" name="data" value="{{ data|date:'Y-m-d' }}" max="{{ hoje|date:'Y-m-d' }}" required{% if erro_data %} aria-invalid="true" aria-describedby="erro-data"{% endif %}>
+    {% if erro_data %}<p class="erro-campo" id="erro-data" role="alert"><span aria-hidden="true">⚠</span> {{ erro_data }}</p>{% endif %}</div>
+  <div class="campo"><button class="btn btn-sec" type="submit">Abrir lista</button></div>
+</form>
+
+{% if atividade and not erro_data %}
+<form method="post" novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="atividade" value="{{ atividade.pk }}">
+  <input type="hidden" name="data" value="{{ data|date:'Y-m-d' }}">
+  {% if erro %}<div class="aviso aviso-error" role="alert"><span aria-hidden="true">⚠</span><span>{{ erro }} Os dados marcados foram mantidos.</span></div>{% endif %}
+  <p class="contador" aria-live="polite">{{ contagem.total }} inscritos · {{ contagem.presentes }} presentes · {{ contagem.ausentes }} ausentes</p>
+  {% for l in linhas %}
+  <fieldset class="chamada-linha">
+    <legend>{{ l.b.nome_completo }}</legend>
+    <div class="opcoes">
+      <label><input type="radio" name="estado_{{ l.b.pk }}" value="presente"{% if l.estado == "presente" %} checked{% endif %}><span><span aria-hidden="true">✓</span> Presente</span></label>
+      <label><input type="radio" name="estado_{{ l.b.pk }}" value="ausente"{% if l.estado == "ausente" %} checked{% endif %}><span><span aria-hidden="true">✗</span> Ausente</span></label>
+    </div>
+    <div class="campo" style="margin:10px 0 0"><label for="just_{{ l.b.pk }}">Justificativa da ausência <span class="opcional">(opcional)</span></label>
+      <input id="just_{{ l.b.pk }}" name="justificativa_{{ l.b.pk }}" maxlength="200" value="{{ l.justificativa }}" placeholder="Ex.: consulta médica"></div>
+  </fieldset>
+  {% empty %}
+  <p>Nenhum beneficiário ativo inscrito nesta atividade.</p>
+  {% endfor %}
+  {% if linhas %}<div class="fixo"><button class="btn btn-largo" type="submit">Salvar chamada</button></div>{% endif %}
+</form>
+{% endif %}
+{% endblock %}
