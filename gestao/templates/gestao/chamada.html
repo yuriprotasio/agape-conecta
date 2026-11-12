@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
 {% block titulo %}Chamada de frequência{% endblock %}
+{% block scripts %}<script src="{% static 'js/chamada.js' %}" defer></script>{% endblock %}
 {% block conteudo %}
 <h1>Chamada de frequência</h1>
 <form method="get" class="filtros" aria-label="Escolher atividade e data">
@@ -20,7 +22,7 @@
   <input type="hidden" name="atividade" value="{{ atividade.pk }}">
   <input type="hidden" name="data" value="{{ data|date:'Y-m-d' }}">
   {% if erro %}<div class="aviso aviso-error" role="alert"><span aria-hidden="true">⚠</span><span>{{ erro }} Os dados marcados foram mantidos.</span></div>{% endif %}
-  <p class="contador" aria-live="polite">{{ contagem.total }} inscritos · {{ contagem.presentes }} presentes · {{ contagem.ausentes }} ausentes</p>
+  <p class="contador" id="contador-chamada" aria-live="polite">{{ contagem.total }} inscritos · {{ contagem.presentes }} presentes · {{ contagem.ausentes }} ausentes</p>
   {% for l in linhas %}
   <fieldset class="chamada-linha">
     <legend>{{ l.b.nome_completo }}</legend>

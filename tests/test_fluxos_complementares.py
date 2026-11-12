@@ -76,3 +76,9 @@ def test_comando_carregar_demo_cria_dados_ficticios():
     assert Usuario.objects.get(email="gestora@exemplo.org").eh_administrador
     bruno = Beneficiario.objects.get(nome_completo="Bruno Lima")
     assert bruno.frequencias.filter(presente=False).count() == 3
+
+
+def test_chamada_carrega_script_do_contador_da_propria_origem(cliente_colaborador, atividade, turma):
+    conteudo = cliente_colaborador.get(reverse("gestao:chamada"), {"atividade": atividade.pk, "data": "2026-11-10"}).content.decode()
+    assert 'id="contador-chamada"' in conteudo and 'aria-live="polite"' in conteudo
+    assert "/static/js/chamada.js" in conteudo
