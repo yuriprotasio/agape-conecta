@@ -18,7 +18,7 @@
   <li><strong>{{ h.quando|date:"d/m/Y" }}</strong> ·
     {% if h.tipo == "frequencia" %}{{ h.item.atividade.nome }} ·
       {% if h.item.presente %}<span aria-hidden="true">✓</span> Presente{% else %}<span aria-hidden="true">✗</span> Ausente{% if h.item.justificativa %} ({{ h.item.justificativa }}){% endif %}{% endif %}
-    {% else %}Atendimento {{ h.item.get_tipo_display|lower }} · {{ h.item.profissional.nome }}: {{ h.item.descricao|truncatechars:120 }}
+    {% else %}Atendimento {{ h.item.get_tipo_display|lower }} · {{ h.item.profissional.nome }}: {{ h.item.descricao|truncatechars:120 }}{% if h.item.profissional_id == user.pk or user.eh_administrador %} · <a href="{% url 'gestao:atendimento_editar' h.item.pk %}">Editar</a>{% endif %}
     {% endif %}
   </li>
   {% empty %}<li>Nenhum registro ainda.</li>{% endfor %}
