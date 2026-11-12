@@ -6,6 +6,7 @@ app_name = "gestao"
 
 urlpatterns = [
     path("", views.painel, name="painel"),
+    path("saude/", views.saude, name="saude"),
     path("beneficiarios/", benef.lista, name="beneficiarios"),
     path("beneficiarios/novo/", benef.novo, name="beneficiario_novo"),
     path("beneficiarios/<int:pk>/", benef.ficha, name="beneficiario_ficha"),

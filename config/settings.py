@@ -75,6 +75,7 @@ DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 
@@ -117,6 +118,15 @@ if not DEBUG:
     # A hospedagem usa subdomínio do provedor, que não controlamos; por isso não
     # ativamos includeSubDomains nem preload do HSTS (decisão consciente).
     SILENCED_SYSTEM_CHECKS = ["security.W005", "security.W021"]
+    # Em produção a aplicação pode rodar em várias instâncias (ex.: funções da Vercel).
+    # O cache fica no banco para que o bloqueio de login valha para todas elas.
+    # Crie a tabela uma vez com: python manage.py createcachetable
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "cache_aplicacao",
+        }
+    }
 
 LANGUAGE_CODE = "pt-br"
 TIME_ZONE = "America/Sao_Paulo"

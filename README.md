@@ -23,7 +23,7 @@ Os registros de beneficiários, atendimentos e frequência ficam espalhados em p
 - Python 3.12+ e Django 5.2 LTS (arquitetura monolítica em camadas, padrão MVT)
 - PostgreSQL em produção (SQLite apenas no desenvolvimento local)
 - Argon2id para hash de senhas (`argon2-cffi`)
-- WhiteNoise para arquivos estáticos e Gunicorn como servidor de aplicação
+- Publicação na Vercel com PostgreSQL (Neon); WhiteNoise e Gunicorn mantidos para outros provedores
 - pytest e pytest-django para testes automatizados
 
 ## Estrutura
@@ -70,14 +70,24 @@ A suíte cobre regras de negócio (CPF, datas futuras, chamada sem duplicidade, 
 | `CSRF_TRUSTED_ORIGINS` | Origens HTTPS confiáveis, por exemplo `https://agape-conecta.onrender.com` |
 | `DEBUG` | Deve ficar ausente ou `False` em produção |
 
-Antes de publicar:
+## Publicação na Vercel
+
+A Vercel reconhece o projeto Django pelo `manage.py` e pelo `WSGI_APPLICATION`, roda o `collectstatic` no build (porque `STATIC_ROOT` está definido) e serve os arquivos estáticos pela CDN. Não é preciso `vercel.json`. A versão do Python fica em `.python-version`.
+
+1. Importe o repositório em vercel.com (Add New → Project).
+2. Em Storage, crie um banco PostgreSQL (Neon) e conecte ao projeto. A integração cria a variável `DATABASE_URL`.
+3. Em Settings → Environment Variables, defina `SECRET_KEY`, `ALLOWED_HOSTS=.vercel.app` e `CSRF_TRUSTED_ORIGINS=https://<seu-projeto>.vercel.app`, e faça um novo deploy.
+4. Na sua máquina, com `DATABASE_URL` e `SECRET_KEY` de produção no terminal, prepare o banco uma vez:
 
 ```bash
-python manage.py check --deploy
-python manage.py collectstatic --noinput
 python manage.py migrate
-gunicorn config.wsgi
+python manage.py createcachetable
+python manage.py carregar_demo --senha "escolha-uma-senha-forte"   # dados fictícios para avaliação
 ```
+
+## Monitoramento
+
+A rota pública `/saude/` executa uma consulta no banco e responde `{"status": "ok", "banco": "ok"}` com HTTP 200, ou HTTP 503 se o banco estiver fora do ar. Um monitor HTTP(s) do UptimeRobot consulta essa rota a cada 5 minutos e envia e-mail quando o status passa para DOWN.
 
 ## Segurança e privacidade
 
