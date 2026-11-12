@@ -52,3 +52,5 @@ th{background:#eef3f9}
 .historico{list-style:none;padding:0}.historico li{padding:10px 0;border-bottom:1px solid var(--borda)}
 .filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end}
 @media (max-width:480px){.tabela-rolagem{overflow-x:auto}}
+.justificativa[hidden]{display:none}
+#marcar-todos{margin:4px 0 0}

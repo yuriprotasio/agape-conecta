@@ -82,3 +82,17 @@ def test_chamada_carrega_script_do_contador_da_propria_origem(cliente_colaborado
     conteudo = cliente_colaborador.get(reverse("gestao:chamada"), {"atividade": atividade.pk, "data": "2026-11-10"}).content.decode()
     assert 'id="contador-chamada"' in conteudo and 'aria-live="polite"' in conteudo
     assert "/static/js/chamada.js" in conteudo
+
+
+def test_chamada_oferece_marcar_todos_e_motivo_so_para_ausentes(cliente_colaborador, atividade, turma):
+    conteudo = cliente_colaborador.get(reverse("gestao:chamada"), {"atividade": atividade.pk, "data": "2026-11-10"}).content.decode()
+    assert 'id="marcar-todos" hidden' in conteudo  # aparece só quando o JavaScript está ativo
+    assert "Motivo da falta" in conteudo and "(opcional, só para ausentes)" in conteudo
+
+
+def test_telefone_link_inclui_codigo_do_pais(turma):
+    b = turma[0]
+    b.telefone_responsavel = "(12) 98765-4321"
+    assert b.telefone_link == "+5512987654321"
+    b.telefone_responsavel = "+55 12 98765-4321"
+    assert b.telefone_link == "+5512987654321"

@@ -90,6 +90,12 @@ class Beneficiario(models.Model):
         return hoje.year - n.year - ((hoje.month, hoje.day) < (n.month, n.day))
 
     @property
+    def telefone_link(self):
+        """Telefone só com dígitos e o código do país, para o link tel: do alerta."""
+        numeros = "".join(c for c in self.telefone_responsavel if c.isdigit())
+        return f"+{numeros}" if len(numeros) > 11 else f"+55{numeros}"
+
+    @property
     def menor_de_idade(self):
         return self.idade < 18
 
