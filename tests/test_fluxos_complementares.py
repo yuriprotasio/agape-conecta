@@ -96,3 +96,29 @@ def test_telefone_link_inclui_codigo_do_pais(turma):
     assert b.telefone_link == "+5512987654321"
     b.telefone_responsavel = "+55 12 98765-4321"
     assert b.telefone_link == "+5512987654321"
+
+
+# --- Monitoramento: rota de saúde usada pelo UptimeRobot ---
+
+def test_saude_responde_ok_sem_login(client):
+    resposta = client.get(reverse("gestao:saude"))
+    assert resposta.status_code == 200
+    assert resposta.json() == {"status": "ok", "banco": "ok"}
+    assert "no-cache" in resposta["Cache-Control"]
+
+
+def test_saude_responde_503_quando_banco_falha(client, monkeypatch):
+    from django.db import DatabaseError
+    import gestao.views as views
+
+    class CursorQuebrado:
+        def __enter__(self):
+            raise DatabaseError("banco fora do ar")
+
+        def __exit__(self, *args):
+            return False
+
+    monkeypatch.setattr(views.connection, "cursor", lambda: CursorQuebrado())
+    resposta = client.get(reverse("gestao:saude"))
+    assert resposta.status_code == 503
+    assert resposta.json()["status"] == "erro"
