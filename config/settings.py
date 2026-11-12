@@ -114,6 +114,9 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "3600"))
     SECURE_CONTENT_TYPE_NOSNIFF = True
+    # A hospedagem usa subdomínio do provedor, que não controlamos; por isso não
+    # ativamos includeSubDomains nem preload do HSTS (decisão consciente).
+    SILENCED_SYSTEM_CHECKS = ["security.W005", "security.W021"]
 
 LANGUAGE_CODE = "pt-br"
 TIME_ZONE = "America/Sao_Paulo"
