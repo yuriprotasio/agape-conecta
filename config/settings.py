@@ -78,7 +78,7 @@ DATABASES = {
     )
 }
 
-# AUTH_USER_MODEL definido no commit do modelo de usuário
+AUTH_USER_MODEL = "contas.Usuario"
 
 # Senhas: Argon2id como algoritmo principal (nunca texto limpo, MD5 ou SHA-1).
 PASSWORD_HASHERS = [
